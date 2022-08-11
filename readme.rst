@@ -10,6 +10,12 @@ interface and logical structure to access these libraries. CodeIgniter lets
 you creatively focus on your project by minimizing the amount of code needed
 for a given task.
 
+******************
+Requirements
+******************
+JWT : ^6.3
+Rest-Server : ^3.1
+
 *******************
 Release Information
 *******************
