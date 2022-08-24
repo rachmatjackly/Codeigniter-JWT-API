@@ -3,8 +3,7 @@
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class Api
-{
+class Api {
 
     public function configToken()
     {
