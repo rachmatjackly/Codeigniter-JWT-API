@@ -1,49 +1,41 @@
 <?php
 
-use chriskacerguis\RestServer\RestController;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class Auth extends RestController
+class Api
 {
-
-    public function __construct()
-    {
-        parent::__construct();
-        date_default_timezone_set('Asia/Jakarta');
-    }
 
     public function configToken()
     {
-        $cnf['exp'] = time() + 60; //milisecond
+        $cnf['exp'] = time() + 3600; //milisecond
         $cnf['secretkey'] = '2212336221';
         return $cnf;
     }
 
-    public function authtoken()
+    public function authtoken($reqToken)
     {
         $secret_key = $this->configToken()['secretkey'];
         $token = null;
-        $authHeader = $this->input->request_headers()['Authorization'];
-        $arr = explode(" ", $authHeader);
+        $arr = explode(" ", $reqToken);
         $token = $arr[1];
         // echo json_encode(JWT::decode($token, new Key($this->configToken()['secretkey'], 'HS256')));die;
         if ($token) {
             try {
                 $decoded = JWT::decode($token, new Key($this->configToken()['secretkey'], 'HS256'));
                 if ($decoded) {
-                    return 'benar';
+                    return true;
                 }
             } catch (\Exception $e) {
                 $result = array('pesan' => 'Kode Signature Tidak Sesuai');
-                return 'salah';
+                return false;
 
             }
             die;
         }
     }
 
-    public function getToken_post()
+    public function getToken($data)
     {
         $exp = $this->configToken()['exp'];
 
@@ -53,10 +45,7 @@ class Auth extends RestController
             "iat" => time(),
             "nbf" => time() + 10,
             "exp" => $exp,
-            "data" => array(
-                "username" => $this->post('username'),
-                "password" => $this->post('password'),
-            ),
+            "data" => $data,
         );
 
         $jwt = JWT::encode($token, $this->configToken()['secretkey'], 'HS256');
@@ -65,9 +54,10 @@ class Auth extends RestController
             'message' => 'Berhasil login',
             "token" => $jwt,
             "expireAt" => date("Y-m-d H:i:s", $token['exp']),
+            "data" => $data
         ];
-        $data = $output;
-        $this->response($data, 200);
+
+        return $output;
     }
     
 }
